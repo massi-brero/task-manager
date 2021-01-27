@@ -1,11 +1,14 @@
 // CRUD
-const { MongoClient } = require('mongodb')
-
 const connectionUrl = 'mongodb://127.0.0.1:27017'
 const databaseName = 'task-manager'
+const { MongoClient, ObjectID } = require('mongodb')
 
 const usersCollectionName = 'users'
 const tasksCollectionName = 'tasks'
+
+const id = new ObjectID()
+console.log(id)
+console.log(ObjectID(id).getTimestamp())
 
 const tasks = [
     {
@@ -22,28 +25,43 @@ const tasks = [
     }
 ]
 
-try {
+const users = [
+    {
+        _id: id,
+        name: 'Massi',
+        age: 50
+    }
+]
+
+const run = async () => {
+
     const client = new MongoClient(connectionUrl, {
         useNewUrlParser: true,
         useUnifiedTopology: true
     })
 
-    client.connect()
-
+    await client.connect()
     const db = client.db(databaseName)
 
-    const insertTasks = async (tasks) => {
-        try {
-            const result = await db.collection(tasksCollectionName).insertMany(tasks)
-            console.log(result.ops)
-        } catch (err) {
-            console.log(err.message || 'Could not insert tasks.')
-        } finally {
-            await client.close()
-        }
+    try {
+        await insertData(usersCollectionName, users, db)
+        //await insertTasks(tasks)
+    } catch (err) {
+        console.log('Unable to connect to a database: ', err.message)
+    } finally {
+        await client.close()
     }
-
-    insertTasks(tasks)
-} catch (err) {
-    console.log('Unable to connect to a database: ', err.message)
 }
+
+const insertData = async (collection, data, db) => {
+    try {
+        const result = await db.collection(collection).insertMany(data)
+        console.log(result.ops)
+    } catch (err) {
+        console.log(err.message || 'Could not insert data.')
+    }
+}
+
+run().then(() => {
+    console.log('app started...')
+})
