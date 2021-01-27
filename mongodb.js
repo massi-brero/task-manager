@@ -7,8 +7,6 @@ const usersCollectionName = 'users'
 const tasksCollectionName = 'tasks'
 
 const id = new ObjectID()
-console.log(id)
-console.log(ObjectID(id).getTimestamp())
 
 const tasks = [
     {
@@ -44,7 +42,7 @@ const run = async () => {
     const db = client.db(databaseName)
 
     try {
-        await insertData(usersCollectionName, users, db)
+        //await insertData(usersCollectionName, users, db)
         //await insertTasks(tasks)
     } catch (err) {
         console.log('Unable to connect to a database: ', err.message)
