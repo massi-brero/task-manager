@@ -38,16 +38,26 @@ const run = async () => {
         useUnifiedTopology: true
     })
 
-    await client.connect()
-    const db = client.db(databaseName)
-
     try {
+        await client.connect()
+        const db = client.db(databaseName)
+
         //await insertData(usersCollectionName, users, db)
         //await insertTasks(tasks)
+        await findUser(usersCollectionName, {name: 'Massi'}, db)
     } catch (err) {
         console.log('Unable to connect to a database: ', err.message)
     } finally {
         await client.close()
+    }
+}
+
+const findUser = async (collection, search, db) => {
+    try {
+        const result = await db.collection(collection).findOne(search)
+        console.log(result)
+    } catch (err) {
+        console.log(`Unable to fetch: ${err.message}`)
     }
 }
 
