@@ -53,7 +53,8 @@ const run = async () => {
         // await insertData(tasksCollectionName, tasks, db)
         // await find(tasksCollectionName, {_id: new ObjectID('6015648a9502a1827f1201cd')}, db)
         // await find(tasksCollectionName, {completed: true}, db)
-        await update(usersCollectionName, {_id: new ObjectID('60155ea537665880efc00eba')}, {name: 'Jupiter'})
+        // await update(tasksCollectionName, {completed: false}, {completed: true})
+        await remove(tasksCollectionName , {description: '10th Task'})
     } catch (err) {
         console.log('Unable to connect to a database: ', err.message)
     } finally {
@@ -61,7 +62,7 @@ const run = async () => {
     }
 }
 
-const find = async (collection, search, db) => {
+const find = async (collection, search) => {
     try {
         const result = await db.collection(collection).find(search).toArray()
         console.log(
@@ -72,7 +73,7 @@ const find = async (collection, search, db) => {
     }
 }
 
-const insert = async (collection, data, db) => {
+const insert = async (collection, data) => {
     try {
         const result = await db.collection(collection).insertMany(data)
         console.log(result.ops)
@@ -96,6 +97,17 @@ const update = async (collection, search, set) => {
         console.log(err.message || 'Could not update documents.')
     }
 }
+
+const remove = async (collection, search) => {
+    try {
+        const result = await db.collection(collection).deleteMany(search)
+        console.log(result.deletedCount)
+        return result.deletedCount;
+    } catch (err) {
+        console.log(err.message || 'Could not delete documents.')
+    }
+}
+
 
 run().then(() => {
     console.log('app ran...')
