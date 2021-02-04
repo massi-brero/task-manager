@@ -12,6 +12,15 @@ const run = async () => {
         }
     })
 
+    const Task = mongoose.model('Task', {
+        name: {
+            description: String
+        },
+        completed: {
+            type: Boolean
+        }
+    })
+
     try {
         await mongoose.connect(dbUrl, {
             useNewUrlParser: true,
@@ -27,8 +36,14 @@ const run = async () => {
         age: 50
     })
 
+    const task1 = new Task({
+        description: 'Task 1',
+        completed: false
+    })
+
     try {
-        const result = await me.save()
+        //const result = await me.save()
+        const result = await task1.save()
         console.log(result)
     } catch (e) {
         console.log(e.message)
