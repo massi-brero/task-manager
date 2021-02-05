@@ -12,6 +12,7 @@
   "dependencies": {
     "mogoose": "0.0.1-security",
     "mongodb": "^3.6.3",
-    "mongoose": "^5.11.14"
+    "mongoose": "^5.11.14",
+    "validator": "^13.5.2"
   }
 }
