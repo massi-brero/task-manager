@@ -10,6 +10,19 @@ const run = async () => {
             trim: true,
             required: true
         },
+        password: {
+            type: String,
+            required: true,
+            trim: true,
+            minlength: 6,
+            validate(value) {
+                const excludedWords = ['password']
+
+                excludedWords.forEach(word => {
+                    if (value.toLowerCase().includes(word)) throw new Error(`Your password contains the excluded word "${word}"`)
+                })
+            }
+        },
         email: {
             type: String,
             trim: true,
@@ -32,22 +45,26 @@ const run = async () => {
 
     const me = new User({
         name: '   Jeff  ',
+        password: ' nn ',
         email: 'Jeff@fritze.de',
         age: 23
     })
 
     const Task = mongoose.model('Task', {
-        name: {
-            description: String
+        description: {
+            type: String,
+            trim: true,
+            required: true
         },
         completed: {
-            type: Boolean
+            type: Boolean,
+            default: false
         }
     })
 
     const task1 = new Task({
-        description: 'Task 1',
-        completed: false
+        description: 'Test5   ',
+        completed: true
     })
 
     try {
@@ -61,8 +78,8 @@ const run = async () => {
     }
 
     try {
-        const result = await me.save()
-        //const result = await task1.save()
+        // const result = await me.save()
+        const result = await task1.save()
         console.log(result)
     } catch (e) {
         console.log(e.message)
