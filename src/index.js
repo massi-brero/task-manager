@@ -9,7 +9,6 @@ const port = process.env.PORT || 3000
 const ENTITY_USER = 'users'
 const ENTITY_TASK = 'tasks'
 
-db.startDb()
 app.use(express.json())
 
 app.post('/:resource', async (req, res, next) => {
@@ -39,6 +38,21 @@ app.post('/:resource', async (req, res, next) => {
     }
 })
 
-app.listen(port, () => {
+app.get('/users', async (req, res) => {
+    try {
+        const users = await User.find()
+        res.send(users)
+    } catch (e) {
+        console.log(e.message)
+    }
+})
+
+app.listen(port, async () => {
     console.log(`server listening on ${port}`)
+
+    try {
+        await db.startDb()
+    } catch (e) {
+        console.log(e.message)
+    }
 })
