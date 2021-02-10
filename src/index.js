@@ -1,31 +1,16 @@
-const User = require('./models/user')
-const Task = require('./models/task')
 const express = require('express')
 const db = require('./db/dbHandle')
+const dbUtils = require('./db/db.utils')
 require('mongoose')
 const app = express()
 const port = process.env.PORT || 3000
-
-const ENTITY_USER = 'users'
-const ENTITY_TASK = 'tasks'
 
 app.use(express.json())
 
 app.post('/:resource', async (req, res, next) => {
 
     try {
-        let resource = req.params.resource;
-
-        switch (resource) {
-            case ENTITY_USER:
-                resource = new User(req.body)
-                break
-            case ENTITY_TASK:
-                resource = new Task(req.body)
-                break
-            default:
-                throw new Error('No such entity.')
-        }
+        let resource = dbUtils.getResource(req.params.resource)
 
         await resource.save();
         res
@@ -38,12 +23,29 @@ app.post('/:resource', async (req, res, next) => {
     }
 })
 
-app.get('/users', async (req, res) => {
+app.get('/:resource', async (req, res) => {
+    let resource = dbUtils.getResource(req.params.resource);
     try {
-        const users = await User.find()
+        const users = await resource.find()
         res.send(users)
     } catch (e) {
-        console.log(e.message)
+        res.status(500).send(e.message)
+    }
+})
+
+app.get('/:resource/:id', async (req, res) => {
+    try {
+        const id = req.params.id
+        const resource = req.params.resource
+        const user = await getResource(resource).findById(id)
+
+        if (!user) {
+            res.status(404)
+        }
+
+        res.send(user)
+    } catch (e) {
+        res.status(500).send(e.message)
     }
 })
 
