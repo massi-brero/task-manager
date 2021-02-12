@@ -7,7 +7,7 @@ const port = process.env.PORT || 3000
 
 app.use(express.json())
 
-app.post('/:resource', async (req, res, next) => {
+app.post('/:resource', async (req, res) => {
 
     try {
         let resource = dbUtils.getResource(req.params.resource)
@@ -24,10 +24,12 @@ app.post('/:resource', async (req, res, next) => {
 })
 
 app.get('/:resource', async (req, res) => {
-    let resource = dbUtils.getResource(req.params.resource);
+
     try {
-        const users = await resource.find()
-        res.send(users)
+        let resource = dbUtils.getResource(req.params.resource);
+        console.log(resource)
+        const result = await resource.find()
+        res.send(result)
     } catch (e) {
         res.status(500).send(e.message)
     }
@@ -37,13 +39,13 @@ app.get('/:resource/:id', async (req, res) => {
     try {
         const id = req.params.id
         const resource = req.params.resource
-        const user = await getResource(resource).findById(id)
+        const result = await dbUtils.getResource(resource, req.body).findById(id)
 
-        if (!user) {
+        if (!resource) {
             res.status(404)
         }
 
-        res.send(user)
+        res.send(result)
     } catch (e) {
         res.status(500).send(e.message)
     }
