@@ -10,10 +10,10 @@ app.use(express.json())
 app.post('/:resource', async (req, res) => {
 
     try {
-        let resource = dbUtils.getResource(req.params.resource, req.body)
 
         try {
-            await resource.save();
+            let resource = dbUtils.getResource(req).save();
+
             res
                 .status(201)
                 .send(resource)
@@ -32,19 +32,19 @@ app.post('/:resource', async (req, res) => {
 app.get('/:resource', async (req, res) => {
 
     try {
-        let resource = dbUtils.getResource(req.params.resource);
-        const result = await resource.find()
+        let result = await dbUtils.getResource(req).find()
         res.send(result)
     } catch (e) {
+        console.log(e)
         res.status(500).send(e.message)
     }
 })
 
+
 app.get('/:resource/:id', async (req, res) => {
     try {
         const id = req.params.id
-        const resource = req.params.resource
-        const result = await dbUtils.getResource(resource).findById(id)
+        const result = await dbUtils.getResource(req).findById(id)
 
         res.send(result)
 
@@ -54,6 +54,29 @@ app.get('/:resource/:id', async (req, res) => {
 
     } catch (e) {
         res.status(500).send(e.message)
+    }
+})
+
+app.put('/:resource/:id', async (req, res) => {
+    const options = {
+        new: true,
+        runValidators: true
+    }
+    try {
+        const result = await dbUtils.getResource(req).findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            options
+        )
+
+        if (!result) {
+            return res.status(404)
+        }
+
+        res.send(result)
+
+    } catch (e) {
+        res.status(422).send(e.message)
     }
 })
 
