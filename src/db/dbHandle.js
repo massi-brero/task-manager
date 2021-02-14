@@ -6,7 +6,8 @@ const startDb = async () => {
         await db.connect(dbUrl, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
-            useCreateIndex: true
+            useCreateIndex: true,
+            useFindAndModify: false
         });
     } catch (e) {
         console.log(e.message)
