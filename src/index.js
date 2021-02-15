@@ -4,6 +4,7 @@ const dbUtils = require('./db/db.utils')
 require('mongoose')
 const app = express()
 const port = process.env.PORT || 3000
+const resources = ['users', 'tasks']
 
 app.use(express.json())
 
@@ -58,6 +59,27 @@ app.get('/:resource/:id', async (req, res) => {
 })
 
 app.put('/:resource/:id', async (req, res) => {
+    const resource = req.params.resource
+    const updates = Object.keys(req.body)
+    const allowedUpdates = {
+        users: ['name', 'password', 'name', 'age'],
+        tasks: ['description', 'completed'],
+    }
+
+    if (resources.includes(resource)) {
+        res.status(400).send({
+            error: 'No such resource'
+        })
+    }
+
+    const isValidUpdate = updates.every((prop) => allowedUpdates[resource].includes(prop))
+    if (!isValidUpdate) {
+        res.status(400).send({
+            error: 'Invalid updates!'
+        })
+    }
+
+
     const options = {
         new: true,
         runValidators: true
@@ -70,7 +92,7 @@ app.put('/:resource/:id', async (req, res) => {
         )
 
         if (!result) {
-            return res.status(404)
+            return res.status(404).send()
         }
 
         res.send(result)
