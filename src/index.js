@@ -66,7 +66,7 @@ app.put('/:resource/:id', async (req, res) => {
         tasks: ['description', 'completed'],
     }
 
-    if (resources.includes(resource)) {
+    if (!resources.includes(resource)) {
         res.status(400).send({
             error: 'No such resource'
         })
