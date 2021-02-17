@@ -50,7 +50,7 @@ app.get('/:resource/:id', async (req, res) => {
         res.send(result)
 
         if (!result) {
-            return res.status(404)
+            return res.status(404).send()
         }
 
     } catch (e) {
@@ -65,6 +65,7 @@ app.put('/:resource/:id', async (req, res) => {
         users: ['name', 'password', 'name', 'age'],
         tasks: ['description', 'completed'],
     }
+    const isValidUpdate = updates.every((prop) => allowedUpdates[resource].includes(prop))
 
     if (!resources.includes(resource)) {
         res.status(400).send({
@@ -72,7 +73,7 @@ app.put('/:resource/:id', async (req, res) => {
         })
     }
 
-    const isValidUpdate = updates.every((prop) => allowedUpdates[resource].includes(prop))
+
     if (!isValidUpdate) {
         res.status(400).send({
             error: 'Invalid updates!'
@@ -84,6 +85,7 @@ app.put('/:resource/:id', async (req, res) => {
         new: true,
         runValidators: true
     }
+
     try {
         const result = await dbUtils.getResource(req).findByIdAndUpdate(
             req.params.id,
@@ -100,6 +102,25 @@ app.put('/:resource/:id', async (req, res) => {
     } catch (e) {
         res.status(422).send(e.message)
     }
+})
+
+app.delete('/:resource/:id', async (req, res) => {
+    try {
+        const result =await  dbUtils
+            .getResource(req)
+            .findByIdAndDelete(req.params.id)
+
+        if (!result) {
+            return res.status(404).send()
+        }
+
+        res.send(result)
+
+    } catch (e) {
+        res.status(500).send()
+        console.log(e)
+    }
+
 })
 
 app.listen(port, async () => {
