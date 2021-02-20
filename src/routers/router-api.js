@@ -17,7 +17,7 @@ ApiRouter.post('/api/:resource', async (req, res) => {
     try {
 
         try {
-            let resource = dbUtils.getResource(req).save();
+            let resource = await dbUtils.getResource(req).save();
 
             res
                 .status(201)
@@ -83,7 +83,6 @@ ApiRouter.put('/api/:resource/:id', async (req, res) => {
             error: 'Invalid updates!'
         })
     }
-
 
     const options = {
         new: true,
