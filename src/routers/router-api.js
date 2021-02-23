@@ -5,14 +5,14 @@ require('mongoose')
 const resources = ['users', 'tasks']
 
 
-const ApiRouter = new express.Router()
-ApiRouter.get('/test', async (req, res) => {
+const apiRouter = new express.Router()
+apiRouter.get('/test', async (req, res) => {
     res.send('from the router with love')
 })
 
-module.exports = ApiRouter
+module.exports = apiRouter
 
-ApiRouter.post('/api/:resource', async (req, res) => {
+apiRouter.post('/api/:resource', async (req, res) => {
 
     try {
 
@@ -34,7 +34,7 @@ ApiRouter.post('/api/:resource', async (req, res) => {
     }
 })
 
-ApiRouter.get('/api/:resource', async (req, res) => {
+apiRouter.get('/api/:resource', async (req, res) => {
 
     try {
         let result = await dbUtils.getResource(req).find()
@@ -46,7 +46,7 @@ ApiRouter.get('/api/:resource', async (req, res) => {
 })
 
 
-ApiRouter.get('/api/:resource/:id', async (req, res) => {
+apiRouter.get('/api/:resource/:id', async (req, res) => {
     try {
         const id = req.params.id
         const result = await dbUtils.getResource(req).findById(id)
@@ -62,7 +62,7 @@ ApiRouter.get('/api/:resource/:id', async (req, res) => {
     }
 })
 
-ApiRouter.put('/api/:resource/:id', async (req, res) => {
+apiRouter.put('/api/:resource/:id', async (req, res) => {
     const resource = req.params.resource
     const updates = Object.keys(req.body)
     const allowedUpdates = {
@@ -90,26 +90,34 @@ ApiRouter.put('/api/:resource/:id', async (req, res) => {
     }
 
     try {
-        const result = await dbUtils.getResource(req).findByIdAndUpdate(
-            req.params.id,
-            req.body,
-            options
-        )
 
-        if (!result) {
+        const resource = await dbUtils.getResource(req)
+            .findById(req.params.id)
+
+        updates.forEach((update) => resource[update] = req.body[update])
+        await resource.save()
+
+        // resource.findByIdAndUpdate(
+        //     req.params.id,
+        //     req.body,
+        //     options
+        // )
+
+
+        if (!resource) {
             return res.status(404).send()
         }
 
-        res.send(result)
+        res.send(resource)
 
     } catch (e) {
         res.status(422).send(e.message)
     }
 })
 
-ApiRouter.delete('/api/:resource/:id', async (req, res) => {
+apiRouter.delete('/api/:resource/:id', async (req, res) => {
     try {
-        const result =await dbUtils
+        const result = await dbUtils
             .getResource(req)
             .findByIdAndDelete(req.params.id)
 
