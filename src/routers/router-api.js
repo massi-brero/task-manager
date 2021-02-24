@@ -13,12 +13,10 @@ apiRouter.get('/test', async (req, res) => {
 module.exports = apiRouter
 
 apiRouter.post('/api/:resource', async (req, res) => {
-
     try {
 
         try {
             let resource = await dbUtils.getResource(req).save();
-
             res
                 .status(201)
                 .send(resource)
@@ -35,7 +33,6 @@ apiRouter.post('/api/:resource', async (req, res) => {
 })
 
 apiRouter.get('/api/:resource', async (req, res) => {
-
     try {
         let result = await dbUtils.getResource(req).find()
         res.send(result)
@@ -69,20 +66,15 @@ apiRouter.put('/api/:resource/:id', async (req, res) => {
         users: ['name', 'password', 'name', 'age'],
         tasks: ['description', 'completed'],
     }
+
     const isValidUpdate = updates.every((prop) => allowedUpdates[resource].includes(prop))
 
-    if (!resources.includes(resource)) {
+    if (!resources.includes(resource) || !isValidUpdate) {
         res.status(400).send({
             error: 'No such resource'
         })
     }
 
-
-    if (!isValidUpdate) {
-        res.status(400).send({
-            error: 'Invalid updates!'
-        })
-    }
 
     const options = {
         new: true,
@@ -94,19 +86,12 @@ apiRouter.put('/api/:resource/:id', async (req, res) => {
         const resource = await dbUtils.getResource(req)
             .findById(req.params.id)
 
-        updates.forEach((update) => resource[update] = req.body[update])
-        await resource.save()
-
-        // resource.findByIdAndUpdate(
-        //     req.params.id,
-        //     req.body,
-        //     options
-        // )
-
-
         if (!resource) {
             return res.status(404).send()
         }
+
+        updates.forEach((update) => resource[update] = req.body[update])
+        await resource.save()
 
         res.send(resource)
 

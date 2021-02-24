@@ -21,7 +21,7 @@ const sec = async () => {
     console.log(isMatch)
 }
 
-sec()
+// sec()
 
 app.listen(port, async () => {
     console.log(`server listening on ${port}`)
