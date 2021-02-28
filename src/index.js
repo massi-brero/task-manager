@@ -9,19 +9,16 @@ app.use(express.json())
 app.use(ApiRouter)
 
 const bCrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 
 const sec = async () => {
-    const pw = 'red123456!'
-    const hashedPw = await bCrypt.hash(pw, 8)
+    const token = jwt.sign({_id: 'acv'}, '12345678', { expiresIn: '10 second'})
+    console.log(token)
 
-    console.log(pw)
-    console.log(hashedPw)
-
-    const isMatch = await bCrypt.compare('red123456!', hashedPw)
-    console.log(isMatch)
+    console.log(jwt.verify(token, '12345678'))
 }
 
-// sec()
+ sec()
 
 app.listen(port, async () => {
     console.log(`server listening on ${port}`)

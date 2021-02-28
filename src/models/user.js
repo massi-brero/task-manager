@@ -2,6 +2,12 @@ const mongoose = require('mongoose')
 const validator = require('validator')
 const bcrypt = require('bcryptjs')
 
+const unableToLoginError = logCondition => {
+    if(!logCondition) {
+        throw new Error('Unable to login.')
+    }
+}
+
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -24,6 +30,7 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         trim: true,
+        unique: true,
         required: true,
         lowercase: true,
         validate(value) {
@@ -40,7 +47,17 @@ const userSchema = new mongoose.Schema({
     }
 })
 
+userSchema.statics.findByCredentials = async (email, password) => {
+    const user = await User.findOne({ email })
+    unableToLoginError(user)
 
+    const isMatch = await bcrypt.compare(password, user.password)
+    unableToLoginError(isMatch)
+
+    return user
+}
+
+// hash plain text password before saving
 userSchema.pre('save', async function (next) {
     const user = this
 
