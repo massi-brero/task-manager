@@ -1,16 +1,11 @@
 const express = require('express')
 const dbUtils = require('../db/db.utils')
-const User = require('../models/user')
 require('mongoose')
 
 const resources = ['users', 'tasks']
 
 
 const apiRouter = new express.Router()
-apiRouter.get('/test', async (req, res) => {
-    res.send('from the router with love')
-})
-
 module.exports = apiRouter
 
 apiRouter.post('/api/:resource', async (req, res) => {
@@ -57,15 +52,6 @@ apiRouter.get('/api/:resource/:id', async (req, res) => {
 
     } catch (e) {
         res.status(500).send(e.message)
-    }
-})
-
-apiRouter.post('/api/users/login', async(req, res) => {
-    try {
-        const user = await User.findByCredentials(req.body.email, req.body.password)
-        res.send(user)
-    } catch (err) {
-        res.status(400).send()
     }
 })
 

@@ -3,10 +3,12 @@ const db = require('./db/dbHandle')
 const port = process.env.PORT || 3000
 const app = express()
 const ApiRouter = require('./routers/router-api')
+const UserRouter = require('./routers/router-users')
 
 
 app.use(express.json())
 app.use(ApiRouter)
+app.use(UserRouter)
 
 const bCrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
@@ -18,7 +20,7 @@ const sec = async () => {
     console.log(jwt.verify(token, '12345678'))
 }
 
- sec()
+sec()
 
 app.listen(port, async () => {
     console.log(`server listening on ${port}`)
