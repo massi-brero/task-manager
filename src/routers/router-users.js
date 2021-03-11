@@ -7,7 +7,7 @@ require('mongoose')
 const userRouter = new express.Router()
 module.exports = userRouter
 
-apiRouter.post('/api/users', async (req, res) => {
+userRouter.post('/api/users', async (req, res) => {
 
         try {
 
@@ -17,13 +17,13 @@ apiRouter.post('/api/users', async (req, res) => {
                 throw new Error('A user with that email already exists.')
             }
 
-            const user = await dbUtils.getResource(req).save();
+            const user = await (new User(req.body)).save();
 
             res
                 .status(201)
                 .send({
                     user,
-                    token: user.generateAuthToken()
+                    token: await user.generateAuthToken()
                 })
         } catch (e) {
             res

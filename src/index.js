@@ -7,8 +7,8 @@ const UserRouter = require('./routers/router-users')
 
 
 app.use(express.json())
-app.use(ApiRouter)
 app.use(UserRouter)
+app.use(ApiRouter)
 
 const bCrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')

@@ -8,7 +8,7 @@ const resources = ['users', 'tasks']
 const apiRouter = new express.Router()
 module.exports = apiRouter
 
-apiRouter.post('/api/:resource((?!users).*)', async (req, res) => {
+apiRouter.post('/api/:resource', async (req, res) => {
     try {
 
         try {
