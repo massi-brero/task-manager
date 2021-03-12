@@ -1,5 +1,6 @@
 const express = require('express')
 const dbUtils = require('../db/db.utils')
+const auth = require('../middleware/auth')
 require('mongoose')
 
 const resources = ['users', 'tasks']
@@ -28,7 +29,7 @@ apiRouter.post('/api/:resource', async (req, res) => {
     }
 })
 
-apiRouter.get('/api/:resource', async (req, res) => {
+apiRouter.get('/api/:resource', auth, async (req, res) => {
     try {
         let result = await dbUtils.getResource(req).find()
         res.send(result)

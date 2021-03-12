@@ -1,8 +1,6 @@
 const express = require('express')
 const User = require('../models/user')
-const dbUtils = require('../db/db.utils')
 require('mongoose')
-
 
 const userRouter = new express.Router()
 module.exports = userRouter

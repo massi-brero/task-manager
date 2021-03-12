@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const validator = require('validator')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const constants = require('../shared/constants')
 
 const unableToLoginError = logCondition => {
     if(!logCondition) {
@@ -50,7 +51,7 @@ const userSchema = new mongoose.Schema({
 
 userSchema.methods.generateAuthToken = async function() {
     const user = this
-    return jwt.sign({_id: user._id.toString()}, 'massisoft', {})
+    return jwt.sign({_id: user._id.toString()}, constants.SALT, {})
 }
 
 userSchema.statics.findByCredentials = async (email, password) => {
