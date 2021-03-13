@@ -115,7 +115,7 @@ out
 .nuxt
 dist
 
-.idea/workspace.xml
+.idea/**
 
 # Gatsby files
 .cache/

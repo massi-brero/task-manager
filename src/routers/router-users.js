@@ -38,6 +38,7 @@ userRouter.post('/api/users/login', async (req, res) => {
         console.log(token)
         res.send({user, token})
     } catch (err) {
-        res.status(400).send()
+        const status = err.message.includes(401) ? 401 : 400
+        res.status(status).send()
     }
 })

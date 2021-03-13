@@ -8,7 +8,7 @@ const auth = async (req, res, next) => {
         const user = User.findOne({
             _id: decoded._id
         })
-        if (decoded)
+
         next()
     } catch (e) {
         res
