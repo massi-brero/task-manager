@@ -29,7 +29,7 @@ apiRouter.post('/api/:resource', async (req, res) => {
     }
 })
 
-apiRouter.get('/api/:resource', auth, async (req, res) => {
+apiRouter.get(/api\/(?!users$)/, auth, async (req, res) => {
     try {
         let result = await dbUtils.getResource(req).find()
         res.send(result)

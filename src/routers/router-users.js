@@ -1,5 +1,6 @@
 const express = require('express')
 const User = require('../models/user')
+const auth = require('../middleware/auth')
 require('mongoose')
 
 const userRouter = new express.Router()
@@ -30,6 +31,11 @@ userRouter.post('/api/users', async (req, res) => {
         }
 
 })
+
+userRouter.get('/api/users/me', auth, async (req, res) => {
+    res.send(req.user)
+})
+
 
 userRouter.post('/api/users/login', async (req, res) => {
     try {
