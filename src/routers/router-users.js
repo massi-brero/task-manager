@@ -24,6 +24,7 @@ userRouter.post('/api/users', async (req, res) => {
                     user,
                     token: await user.generateAuthToken()
                 })
+
         } catch (e) {
             res
                 .status(400)
@@ -32,19 +33,43 @@ userRouter.post('/api/users', async (req, res) => {
 
 })
 
-userRouter.get('/api/users/me', auth, async (req, res) => {
-    res.send(req.user)
-})
-
-
 userRouter.post('/api/users/login', async (req, res) => {
     try {
         const user = await User.findByCredentials(req.body.email, req.body.password)
         const token = await user.generateAuthToken()
-        console.log(token)
         res.send({user, token})
     } catch (err) {
+        console.log(err)
         const status = err.message.includes(401) ? 401 : 400
         res.status(status).send()
     }
+})
+
+userRouter.post('/api/users/logout', auth, async (req, res) => {
+    try {
+        req.user.tokens = req.user.tokens.filter((token) => {
+            return token.token !== req.token
+        })
+
+        await req.user.save()
+
+        res.send()
+    } catch (err) {
+        res.status(500).send()
+    }
+})
+
+userRouter.post('/api/users/logoutAll', auth, async (req, res) => {
+    try {
+        req.user.tokens = []
+        await req.user.save()
+
+        res.send()
+    } catch (err) {
+        res.status(500).send()
+    }
+})
+
+userRouter.get('/api/users/me', auth, async (req, res) => {
+    res.send(req.user)
 })
