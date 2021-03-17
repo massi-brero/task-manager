@@ -25,6 +25,66 @@ userRouter.post('/api/users', async (req, res) => {
   }
 })
 
+userRouter.get('/api/users', auth, async (req, res) => {
+  try {
+    let result = await User.find()
+    res.send(result)
+  } catch (e) {
+    console.log(e)
+    res.status(500).send(e.message)
+  }
+})
+
+userRouter.get('/api/users/:id', auth, async (req, res) => {
+  try {
+    const id = req.params.id
+    const result = await User.findById(id)
+
+    if (!result) {
+      return res.status(404).send()
+    }
+
+    res.send(result)
+  } catch (e) {
+    res.status(500).send(e.message)
+  }
+})
+
+userRouter.put('/api/:resource/:id', async (req, res) => {
+  const updates = Object.keys(req.body)
+  const allowedUpdates = ['name', 'password', 'name', 'age']
+
+  const isValidUpdate = updates.every((prop) =>
+    allowedUpdates[resource].includes(prop)
+  )
+
+  if (!resources.includes(resource) || !isValidUpdate) {
+    res.status(400).send({
+      error: 'No such resource',
+    })
+  }
+
+  const options = {
+    new: true,
+    runValidators: true,
+  }
+
+  try {
+    const resource = await User.findById(req.params.id)
+
+    if (!resource) {
+      return res.status(404).send()
+    }
+
+    updates.forEach((update) => (resource[update] = req.body[update]))
+    await resource.save()
+
+    res.send(resource)
+  } catch (e) {
+    res.status(422).send(e.message)
+  }
+})
+
 userRouter.post('/api/users/login', async (req, res) => {
   try {
     const user = await User.findByCredentials(req.body.email, req.body.password)
@@ -34,6 +94,21 @@ userRouter.post('/api/users/login', async (req, res) => {
     console.log(err)
     const status = err.message.includes(401) ? 401 : 400
     res.status(status).send()
+  }
+})
+
+userRouter.delete('/api/users/:id', async (req, res) => {
+  try {
+    const result = await User.findByIdAndDelete(req.params.id)
+
+    if (!result) {
+      return res.status(404).send()
+    }
+
+    res.send(result)
+  } catch (e) {
+    res.status(500).send()
+    console.log(e)
   }
 })
 
