@@ -1,9 +1,6 @@
 const express = require('express')
-const auth = require('../middleware/auth')
 const Task = require('../models/task')
 require('mongoose')
-
-const resources = ['users', 'tasks']
 
 const tasksRouter = new express.Router()
 module.exports = tasksRouter
@@ -52,9 +49,9 @@ tasksRouter.put('/api/:resource/:id', async (req, res) => {
 
   const isValidUpdate = updates.every((prop) => allowedUpdates.includes(prop))
 
-  if (!resources.includes(resource) || !isValidUpdate) {
+  if (!isValidUpdate) {
     res.status(400).send({
-      error: 'No such resource',
+      error: 'You cannot change this.',
     })
   }
 

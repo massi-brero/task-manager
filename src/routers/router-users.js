@@ -8,7 +8,7 @@ module.exports = userRouter
 
 userRouter.post('/api/users', async (req, res) => {
   try {
-    const userExists = !!!User.findOne(req.body.email)
+    const userExists = !User.findOne(req.body.email)
 
     if (userExists) {
       throw new Error('A user with that email already exists.')
@@ -35,32 +35,14 @@ userRouter.get('/api/users', auth, async (req, res) => {
   }
 })
 
-userRouter.get('/api/users/:id', auth, async (req, res) => {
-  try {
-    const id = req.params.id
-    const result = await User.findById(id)
-
-    if (!result) {
-      return res.status(404).send()
-    }
-
-    res.send(result)
-  } catch (e) {
-    res.status(500).send(e.message)
-  }
-})
-
-userRouter.put('/api/:resource/:id', async (req, res) => {
+userRouter.put('/api/users/me', auth, async (req, res) => {
   const updates = Object.keys(req.body)
-  const allowedUpdates = ['name', 'password', 'name', 'age']
+  const allowedUpdates = ['name', 'password', 'age']
 
-  const isValidUpdate = updates.every((prop) =>
-    allowedUpdates[resource].includes(prop)
-  )
-
-  if (!resources.includes(resource) || !isValidUpdate) {
+  const isValidUpdate = updates.every((prop) => allowedUpdates.includes(prop))
+  if (!isValidUpdate) {
     res.status(400).send({
-      error: 'No such resource',
+      error: 'You cannot change this.',
     })
   }
 
@@ -70,16 +52,10 @@ userRouter.put('/api/:resource/:id', async (req, res) => {
   }
 
   try {
-    const resource = await User.findById(req.params.id)
+    updates.forEach((update) => (req.user[update] = req.body[update]))
+    await req.user.save()
 
-    if (!resource) {
-      return res.status(404).send()
-    }
-
-    updates.forEach((update) => (resource[update] = req.body[update]))
-    await resource.save()
-
-    res.send(resource)
+    res.send(req.user)
   } catch (e) {
     res.status(422).send(e.message)
   }
@@ -97,15 +73,10 @@ userRouter.post('/api/users/login', async (req, res) => {
   }
 })
 
-userRouter.delete('/api/users/:id', async (req, res) => {
+userRouter.delete('/api/users/me', auth, async (req, res) => {
   try {
-    const result = await User.findByIdAndDelete(req.params.id)
-
-    if (!result) {
-      return res.status(404).send()
-    }
-
-    res.send(result)
+    await req.user.remove()
+    res.send(req.user)
   } catch (e) {
     res.status(500).send()
     console.log(e)
