@@ -55,7 +55,7 @@ userRouter.put('/api/users/me', auth, async (req, res) => {
     updates.forEach((update) => (req.user[update] = req.body[update]))
     await req.user.save()
 
-    res.send(req.user)
+    res.send(req.user || null)
   } catch (e) {
     res.status(422).send(e.message)
   }
