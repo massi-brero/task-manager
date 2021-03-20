@@ -73,16 +73,6 @@ userRouter.post('/api/users/login', async (req, res) => {
   }
 })
 
-userRouter.delete('/api/users/me', auth, async (req, res) => {
-  try {
-    await req.user.remove()
-    res.send(req.user)
-  } catch (e) {
-    res.status(500).send()
-    console.log(e)
-  }
-})
-
 userRouter.post('/api/users/logout', auth, async (req, res) => {
   try {
     req.user.tokens = req.user.tokens.filter((token) => {
@@ -110,4 +100,14 @@ userRouter.post('/api/users/logoutAll', auth, async (req, res) => {
 
 userRouter.get('/api/users/me', auth, async (req, res) => {
   res.send(req.user)
+})
+
+userRouter.delete('/api/users/me', auth, async (req, res) => {
+  try {
+    await req.user.remove()
+    res.send(req.user)
+  } catch (e) {
+    res.status(500).send()
+    console.log(e)
+  }
 })
