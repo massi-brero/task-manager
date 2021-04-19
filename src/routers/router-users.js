@@ -46,11 +46,6 @@ userRouter.put('/api/users/me', auth, async (req, res) => {
     })
   }
 
-  const options = {
-    new: true,
-    runValidators: true,
-  }
-
   try {
     updates.forEach((update) => (req.user[update] = req.body[update]))
     await req.user.save()
